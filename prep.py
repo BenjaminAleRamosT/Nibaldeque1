@@ -73,7 +73,7 @@ def hankel_svd(X, nFrame, lFrame):
     for i in range(S.shape[0]):
     
         aux = np.array([S[i] * U[:,i]]).T
-        H_i = np.dot(aux, [V[i,:]])
+        H_i = np.dot(aux, [V[i,:]])       #si se añade una transpuesta a V en la linea 70, esto puede quedar V[:,i] como lo tiene el profe
         
         C_i = np.hstack((H_i[0,:] , H_i[1:,-1]))  #la primera fila y la ultima columna (-primer elemento)
         
