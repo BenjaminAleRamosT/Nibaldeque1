@@ -50,15 +50,8 @@ def entropy_spectral():
 # Hankel-SVD
 
 
-def hankel_svd():
+def hankel_svd(X, nFrame, lFrame):
 
-    return
-
-# Hankel's features
-
-
-def hankel_features(X, nFrame, lFrame):
-    
     #recordatorio parametros
     #Línea 2: Número de Frame : 50
     #Línea 3: Tamaño del Frame : 256
@@ -93,7 +86,7 @@ def hankel_features(X, nFrame, lFrame):
     
     X_new = np.sum(C, axis = 0 )
     
-    #print(X_new) #funciona
+    print(X_new) #funciona
     
     Svalues_C = np.linalg.svd(C)
     
@@ -102,7 +95,15 @@ def hankel_features(X, nFrame, lFrame):
 X = [3.5186, 3.2710, 1.0429, 2.3774, 0.0901, 1.7010, 1.2509, 0.6459]
 nFrame, lFrame = 8,3
 
-hankel_features(X, nFrame, lFrame)
+hankel_svd(X, nFrame, lFrame)
+
+# Hankel's features
+
+def hankel_features():
+    
+    return
+
+
 # Obtain j-th variables of the i-th class
 def data_class(x, j, i):
     
