@@ -68,12 +68,14 @@ def hankel_svd(X, nFrame, lFrame):
     
     U, S, V = np.linalg.svd(H)
     
+    V= V.T
+    
     C = []
     
     for i in range(S.shape[0]):
     
         aux = np.array([S[i] * U[:,i]]).T
-        H_i = np.dot(aux, [V[i,:]])       #si se añade una transpuesta a V en la linea 70, esto puede quedar V[:,i] como lo tiene el profe
+        H_i = np.dot(aux, [V[:,i]])
         
         C_i = np.hstack((H_i[0,:] , H_i[1:,-1]))  #la primera fila y la ultima columna (-primer elemento)
         
@@ -86,23 +88,62 @@ def hankel_svd(X, nFrame, lFrame):
     
     X_new = np.sum(C, axis = 0 )
     
-    print(X_new) #funciona
+    #print(X_new) #funciona
     
     Svalues_C = np.linalg.svd(C)
     
     return Svalues_C
 
-X = [3.5186, 3.2710, 1.0429, 2.3774, 0.0901, 1.7010, 1.2509, 0.6459]
-nFrame, lFrame = 8,3
-
-hankel_svd(X, nFrame, lFrame)
+##Para probar
+#X = [3.5186, 3.2710, 1.0429, 2.3774, 0.0901, 1.7010, 1.2509, 0.6459]
+#nFrame, lFrame = 8,3
+#hankel_svd(X, nFrame, lFrame)
 
 # Hankel's features
 
-def hankel_features():
+def hankel_features(X):
     
-    return
+    ##Diadica
+    
+    H = np.empty((0,len(X)-1), int)
+    
+    for n in range(2):
+        H = np.vstack(( H , X[n:n+len(X)-1] ))
+        
+    
+    U, S, V = np.linalg.svd(H)
+    V= V.T
+    
+    C = []
+    for i in range(2):
+        aux = np.array([S[i] * U[:,i]]).T
+        H_i = np.dot(aux, [V[:,i]])
+        #print(H_i)
+        
+        C_i = []
+        
+        C_i.append(H_i[0,0]) 
+        for j in range(len(X)-2):
+            c = (H_i[1,j] + H_i[0,j+1])/2
+            C_i.append(c)
+        C_i.append(H_i[-1,-1])
+        C_i = np.asarray(C_i)
+        print(C_i)
+        C.append(C_i)
+        
+    C = np.asarray(C)
+    
+    X_new = np.sum(C, axis = 0 )
+    
+    print(X_new)
+    
+    #calcular entropia y cosas
+    
+    
+    return C
 
+#X = [1,2,3,4,5,6,7]
+#hankel_features(X)
 
 # Obtain j-th variables of the i-th class
 def data_class(x, j, i):
