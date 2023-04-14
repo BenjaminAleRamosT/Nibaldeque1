@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import utility as ut
 
+import math
+import matplotlib.pyplot  as plt
+
 # Save Data from  Hankel's features
 
 
@@ -40,10 +43,75 @@ def binary_label(i):
 
     return label
 
+#Discrete Fourier Transform
+def DFT(x, k):
+    #se cambio el output para no dividirlo por N
+    suma = 0
+    N = len(x)
+    for n in range(N):
+        suma += x[n] * np.exp( - (1j * ((2*math.pi)/N)*k*n ) )
+    return suma
+
+#uso de la DFT
+x = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+x = [complex(x_i) for x_i in x]
+i_x = [ DFT(x, i) for i in range(len(x)) ]
+
+#Inverse Fourier Transform
+def IDFT(x, n):
+    #el output se dividio por N en vez de multiplicar
+    suma = 0
+    N = len(x)
+    for k in range(N):
+        suma += x[k]  * np.exp( 1j * ((2*math.pi)/N)*k*n )
+    return suma/N
+
+#uso de la IDFT 
+a = [ IDFT(i_x, i) for i in range(len(i_x)) ]
+
+
+def amplitud_espectral(x):
+    A = x.real
+    B = x.imag
+    return np.sqrt( np.sum([np.square(A) , np.square(B)] ,axis = 0) )
+
+# sampling rate
+sr = 128
+# sampling interval
+ts = 1.0/sr
+t = np.arange(0,1,ts)
+
+freq = 1.
+x = 3*np.sin(2*np.pi*freq*t)
+
+freq = 4
+x += np.sin(2*np.pi*freq*t)
+
+freq = 7   
+x += 0.5* np.sin(2*np.pi*freq*t)
+
+plt.figure(figsize = (8, 6))
+plt.plot(t, x, 'r')
+plt.ylabel('Amplitude')
+
+plt.show()
+
+chirp_x = [ DFT(x, i) for i in range(len(x)) ]
+
+plt.plot(x)
+plt.show()
+plt.stem( A(np.asarray(chirp_x)), 'b', \
+         markerfmt=" ", basefmt="-b" )
+plt.show()
 
 # Fourier spectral entropy
 def entropy_spectral():
+    
+    
+    
 
+    
+    
     return
 
 # Hankel-SVD
