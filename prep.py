@@ -7,16 +7,21 @@ import math
 # Save Data from  Hankel's features
 
 
-def save_data(X, Y):
-
+def save_data(X, Y, Param):
     X = [x_i.flatten() for x_i in X ]
 
     df = pd.DataFrame({
                         'X': X,
                         'Y': Y
                             })
-    path = 'dtrain.csv'
-    df.to_csv(path) 
+    
+    p = Param[7]
+    
+    df_train = df.sample(frac=p)
+    df_test = df.drop(df_train.index)
+    
+    df_train.to_csv('dtrain.csv')
+    df_test.to_csv('dtest.csv')
 
     return 
 
@@ -217,7 +222,7 @@ def create_features(Dat, Param):
         for j in range(Dat[0].shape[1]):
             print('\tClase: ',i+1,' dato: ',j+1)
             X_dat = data_class(Dat,j,i)
-            F = hankel_features(X_dat, Param)
+            F = hankel_features(X_dat, Param) # cada F es una muestra o cada datF
             datF.append(F)
             
         Label = binary_label(i,Param)
@@ -259,7 +264,7 @@ def main():
     print('Normalizando data...')
     InputDat = data_norm(InputDat)
     print('Guardando data...')
-    save_data(InputDat, OutDat)
+    save_data(InputDat, OutDat, Param)
     
 
 if __name__ == '__main__':

@@ -2,38 +2,36 @@
 
 import pandas as pd
 import numpy as np
-import csv
 
 # se puede importar OS
 
-#load config param
+# load config param
 
-def load_cnf(ruta_archivo):
-    
+
+def load_cnf(ruta_archivo='cnf.csv'):
+
     with open(ruta_archivo, 'r') as archivo_csv:
-    
-        conf = [int(i) if '.' not in i else float(i) for i in archivo_csv if i != '\n']
+
+        conf = [int(i) if '.' not in i else float(i)
+                for i in archivo_csv if i != '\n']
 
     return conf
 
 
 # Initialize weights for SNN-SGDM
 def iniWs(Param):
+
+    inshape = 2  # PLACEHOLDER que parametro es, deberia ser el largo de las features
+    in_shape, out_shape, layer1_node, layer2_node = inshape, Param[0], Param[4], Param[5]
+
+    W1 = iniW(layer1_node, in_shape)
+    W2 = iniW(layer1_node, layer2_node)
+    W3 = iniW(out_shape, layer2_node)
+    W = list((W1, W2, W3))
     
-    inshape = 2 #PLACEHOLDER que parametro es, deberia ser el largo de las features
-    in_shape,out_shape,layer1_node,layer2_node = inshape,Param[0],Param[4],Param[5]
-    
-    W1 = iniW( layer1_node , in_shape )
-    
-    W2 = iniW( layer1_node, layer2_node )
-    
-    W3 = iniW( out_shape , layer2_node )
-    
-    W = list((W1,W2,W3))
-    
-    V=[]
+    V = []
     for i in range(len(W)):
-        V.append(np.zeros(W[i]))
+        V.append(np.zeros(W[i].shape))
 
     return W, V
 
@@ -50,36 +48,36 @@ def iniW(next, prev):
 # Feed-forward of SNN
 
 
-def forward(x , W , Param):
+def forward(x, W, Param):
 
     A = []
     z = []
     Act = []
     # primera capa
 
-    x = np.dot(x , W[0])
+    x = np.dot(x, W[0])
     z.append(x)
-    
+
     x = act_function(x, act=Param[6])
     A.append(x)
     # segunda capa
 
-    x = np.dot(x , W[1])
+    x = np.dot(x, W[1])
     z.append(x)
-    
+
     x = act_function(x, act=Param[6])
     A.append(x)
 
     # salida
     x = np.dot(x * W[2])
     z.append(x)
-    
-    y = act_function(x, act=4)
+
+    y = act_function(x, act=4) #siempre sigmoid
     A.append(y)
 
     Act.append(A)
     Act.append(z)
-    
+
     return Act
 
 
@@ -161,66 +159,66 @@ def gradW(Act, ye, W, Param):
     Act = lista de resultados de cada capa,
     data activada en [0] y no activada en [1]
     '''
-    
+
     L = len(Act[0])-1
     M = len(ye)
     gW = []
-    
-    #error salida
-    t_e = (np.sum( np.square(Act[0][L] - ye) , axis=1))/2 ##usar ultima capa en Act
-    Cost = 1/M * ( np.sum(t_e) )
-    
-    #como se saca e?, deberia de esr una lista
-    delta = np.multiply( Act[0][L] - ye , deriva_act( Act[1][L], act=4 ) )
-    gW_l = np.dot( delta, act_function( Act[0][L-1] , act = 4 ).T )
-    
+
+    # error salida
+    # usar ultima capa en Act
+    t_e = (np.sum(np.square(Act[0][L] - ye), axis=1))/2
+    Cost = 1/M * (np.sum(t_e))
+
+    # como se saca e?, deberia de esr una lista
+    delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
+    gW_l = np.dot(delta, act_function(Act[0][L-1], act=4).T)
+
     gW.append(gW_l)
-    
-    #error capa oculta
+
+    # error capa oculta
     for l in range(L-1, 0):
-        t1 = np.dot( W[l+1].T , delta )
-        
-        t2 = deriva_act( Act[1][l] , act = Param[6] )
-        
-        delta = np.multiply(t1,t2)
-        
-        t3 = act_function( Act[0][l-1] , act = Param[6] ).T
-        
-        gW_l = np.dot( delta , t3 )
+        t1 = np.dot(W[l+1].T, delta)
+
+        t2 = deriva_act(Act[1][l], act=Param[6])
+
+        delta = np.multiply(t1, t2)
+
+        t3 = act_function(Act[0][l-1], act=Param[6]).T
+
+        gW_l = np.dot(delta, t3)
         gW.append(gW_l)
-    
+
     gW.reverse()
-    
+
     return gW, Cost
 
 # Update W and V
 
 
-def updWV_sgdm( W , V , gW, Param):
-    
+def updWV_sgdm(W, V, gW, Param):
+
     tasa = Param[9]
     beta = Param[10]
-    
+
     for i in range(len(W)):
         V[i] = (beta * V[i]) * (tasa*gW[i])
         W[i] = W[i] - V[i]
-    
+
     return W, V
 
 # Measure
 
 
 def metricas(x, y):
-    
-    
+
     return()
 
 # Confusion matrix
 
 
 def confusion_matrix(z, y):
-    
+
     cm = ''
-    
+
     return(cm)
 # -----------------------------------------------------------------------
