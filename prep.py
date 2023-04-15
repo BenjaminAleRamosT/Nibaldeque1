@@ -3,14 +3,22 @@ import numpy as np
 import utility as ut
 
 import math
-import matplotlib.pyplot  as plt
 
 # Save Data from  Hankel's features
 
 
 def save_data(X, Y):
 
-    return
+    X = [x_i.flatten() for x_i in X ]
+
+    df = pd.DataFrame({
+                        'X': X,
+                        'Y': Y
+                            })
+    path = 'dtrain.csv'
+    df.to_csv(path) 
+
+    return 
 
 # normalize data
 
@@ -26,21 +34,14 @@ def data_norm(x, a = 0.01, b = 0.99):
 # Binary Label
 
 
-def binary_label(i):
+def binary_label(i,Param):
 
     #cantidad de clases distintas
-    n_class = len(np.unique(i))
+    n_class = Param[0]
+   
+    label = np.zeros( n_class )
+    label[i] = 1
     
-    #se genera una matriz de 0s, 
-    #luego se le suma 1 en las posiciones que corresponda
-    #para la clase 0 se le suma un 1 en la posicion 0 de la fila Idx
-    
-    n_muestras = len(i)
-    label = np.zeros( ( n_muestras ,n_class ))
-    
-    for Idx in range(n_muestras):
-        label[Idx,i[Idx]] =+ 1 
-
     return label
 
 #Discrete Fourier Transform
@@ -48,14 +49,15 @@ def DFT(x, k):
     #se cambio el output para no dividirlo por N
     suma = 0
     N = len(x)
+    x = [complex(x_i) for x_i in x]
     for n in range(N):
         suma += x[n] * np.exp( - (1j * ((2*math.pi)/N)*k*n ) )
     return suma
 
 #uso de la DFT
-x = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-x = [complex(x_i) for x_i in x]
-i_x = [ DFT(x, i) for i in range(len(x)) ]
+#x = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+#x = [complex(x_i) for x_i in x]
+#i_x = [ DFT(x, i) for i in range(len(x)) ]
 
 #Inverse Fourier Transform
 def IDFT(x, n):
@@ -67,7 +69,7 @@ def IDFT(x, n):
     return suma/N
 
 #uso de la IDFT 
-a = [ IDFT(i_x, i) for i in range(len(i_x)) ]
+#a = [ IDFT(i_x, i) for i in range(len(i_x)) ]
 
 
 def amplitud_espectral(x):
@@ -81,7 +83,7 @@ def entropy_spectral(x):
     
     a = np.abs(x)
     p = a * 2 / np.sum(a * 2)
-    return -np.sum(p * np.log2(p)) / np.log2(len(X))
+    return -np.sum(p * np.log2(p)) / np.log2(len(a))
     
 
 # Hankel-SVD
@@ -109,7 +111,7 @@ def hankel_svd(X, nFrame, lFrame):
         
     C = np.asarray(C)
     
-    X_new = np.sum(C, axis = 0 )
+    #X_new = np.sum(C, axis = 0 )
     
     U, Svalues_C, V = np.linalg.svd(C)
     
@@ -149,15 +151,12 @@ def hankel_diadica(X):
         C.append(C_i)
     return C
 
-
 #gets Index for n-th Frame
 def get_Idx_n_Frame(n,l):
     
     Idx = (n*l,(n*l)+l)
     
     return(Idx) #tuple de indices
-
-
 
 # Hankel's features
 
@@ -189,44 +188,47 @@ def hankel_features(X,Param):
             e = []
             U, S, V = np.linalg.svd(np.asarray(C))
             for item in C:
-                e.append(entropy_spectral(item))
+                #x = [complex(x_i) for x_i in item]
+                #x = [ DFT(complex(x), i) for i in range(len(item)) ]
+                x = [amplitud_espectral(i_x) for i_x in item]
+            
+                e.append(entropy_spectral(x))
             np.asarray(e)
             
         F.append( np.hstack(( e , S )) )
                 
     return F
     
-X = [1,2,3,4,5,6,7,8]
-hankel_features(X, (3,3,3,3) )
+#X = [1,2,3,4,5,6,7,8]
+#hankel_features(X, (3,3,3,3) )
 
 
 # Obtain j-th variables of the i-th class
-def data_class(x, j, i):
-    
-    x.iloc[: , -1]
-    
-    return
+def data_class(Dat, j, i):
+    return Dat[i][:,j]
 
 
 # Create Features from Data
-def create_features(X, Param):
-    
+def create_features(Dat, Param):
+    #print(len(Dat))
+    Y, X = [],[]
     for i in range(Param[0]):
-        for j in range(n_var):
-            X = data_class(Dat,j,i)
-            F = hankel_features(X, Param)
-            datF = apilar_features(F)
+        datF = []
+        for j in range(Dat[0].shape[1]):
+            print('\tClase: ',i+1,' dato: ',j+1)
+            X_dat = data_class(Dat,j,i)
+            F = hankel_features(X_dat, Param)
+            datF.append(F)
             
-        Label = binary_label(i)
-        Y = apilar_features(Label)
-        X = apilar_features(datF)
+        Label = binary_label(i,Param)
+        for z in range( len(datF) ):
+            Y.append(Label)
+        X.extend(datF)
     
-    return
+    return X, Y
 
 
 # Load data from ClassXX.csv
-
-import os
 
 def load_data(Param):
     n_class = Param[0] #add [0]
@@ -248,12 +250,17 @@ def load_data(Param):
 
 # Beginning ...
 def main():
-    Param = ut.load_cnf('cnf.csv')
+    print('Cargando config...')
+    Param = ut.load_cnf()
+    print('Cargando data...')
     Data = load_data(Param)
+    print('Creando features...')
     InputDat, OutDat = create_features(Data, Param)
+    print('Normalizando data...')
     InputDat = data_norm(InputDat)
+    print('Guardando data...')
     save_data(InputDat, OutDat)
-
+    
 
 if __name__ == '__main__':
     main()
