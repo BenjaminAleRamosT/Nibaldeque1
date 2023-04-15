@@ -27,11 +27,15 @@ def iniWs(Param):
     
     W2 = iniW( layer1_node, layer2_node )
     
-    W = list((W1,W2))
+    W3 = iniW( out_shape , layer2_node )
     
-    V = iniW( out_shape , layer2_node )
+    W = list((W1,W2,W3))
     
-    return(W, V)
+    V=[]
+    for i in range(len(W)):
+        V.append(np.zeros(W[i]))
+
+    return W, V
 
 
 # Initialize weights for one-layer
@@ -41,30 +45,42 @@ def iniW(next, prev):
     r = np.sqrt(6/(next + prev))
     w = np.random.rand(next, prev)
     w = w*2*r-r
-    return( w )
+    return w
 
 # Feed-forward of SNN
 
 
-def forward(x , W , V, Param):
+def forward(x , W , Param):
 
+    A = []
+    z = []
+    Act = []
     # primera capa
 
     x = np.dot(x , W[0])
-    x = act_function(x)
-
+    z.append(x)
+    
+    x = act_function(x, act=Param[6])
+    A.append(x)
     # segunda capa
 
     x = np.dot(x , W[1])
-    x = act_function(x)
-
+    z.append(x)
+    
+    x = act_function(x, act=Param[6])
+    A.append(x)
 
     # salida
-    x = np.dot(x * V)
+    x = np.dot(x * W[2])
+    z.append(x)
+    
     y = act_function(x, act=4)
+    A.append(y)
 
-
-    return(y)
+    Act.append(A)
+    Act.append(z)
+    
+    return Act
 
 
 # Activation function
@@ -99,7 +115,7 @@ def act_function(x, act=0, a_ELU=1, a_SELU=1.6732, lambdd=1.0507):
     if act == 4:
         return 1 / (1 + np.exp(-1*x))
 
-    return(x)
+    return x
 # Derivatives of the activation funciton
 
 
@@ -135,17 +151,45 @@ def deriva_act(x, act=0, a_ELU=1, a_SELU=1.6732, lambd=1.0507):
         # pasarle la sigmoid
         return act_function(x, act=4) * (1 - act_function(x, act=4))
 
-    return(x)
+    return x
 
 # Feed-Backward of SNN
 
 
 def gradW(Act, ye, W, Param):
+    '''
+    Act = lista de resultados de cada capa,
+    data activada en [0] y no activada en [1]
+    '''
     
-    e = (np.sum( np.square(Act - ye) , axis=1))/2 ##revisar bien la suma
-    Cost = 1/M * ( np.sum(e) )
+    L = len(Act[0])-1
+    M = len(ye)
+    gW = []
     
-    ...
+    #error salida
+    t_e = (np.sum( np.square(Act[0][L] - ye) , axis=1))/2 ##usar ultima capa en Act
+    Cost = 1/M * ( np.sum(t_e) )
+    
+    #como se saca e?, deberia de esr una lista
+    delta = np.multiply( Act[0][L] - ye , deriva_act( Act[1][L], act=4 ) )
+    gW_l = np.dot( delta, act_function( Act[0][L-1] , act = 4 ).T )
+    
+    gW.append(gW_l)
+    
+    #error capa oculta
+    for l in range(L-1, 0):
+        t1 = np.dot( W[l+1].T , delta )
+        
+        t2 = deriva_act( Act[1][l] , act = Param[6] )
+        
+        delta = np.multiply(t1,t2)
+        
+        t3 = act_function( Act[0][l-1] , act = Param[6] ).T
+        
+        gW_l = np.dot( delta , t3 )
+        gW.append(gW_l)
+    
+    gW.reverse()
     
     return gW, Cost
 
@@ -154,9 +198,14 @@ def gradW(Act, ye, W, Param):
 
 def updWV_sgdm( W , V , gW, Param):
     
+    tasa = Param[9]
+    beta = Param[10]
     
+    for i in range(len(W)):
+        V[i] = (beta * V[i]) * (tasa*gW[i])
+        W[i] = W[i] - V[i]
     
-    return()
+    return W, V
 
 # Measure
 

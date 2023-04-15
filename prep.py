@@ -75,48 +75,16 @@ def amplitud_espectral(x):
     B = x.imag
     return np.sqrt( np.sum([np.square(A) , np.square(B)] ,axis = 0) )
 
-# sampling rate
-sr = 128
-# sampling interval
-ts = 1.0/sr
-t = np.arange(0,1,ts)
-
-freq = 1.
-x = 3*np.sin(2*np.pi*freq*t)
-
-freq = 4
-x += np.sin(2*np.pi*freq*t)
-
-freq = 7   
-x += 0.5* np.sin(2*np.pi*freq*t)
-
-plt.figure(figsize = (8, 6))
-plt.plot(t, x, 'r')
-plt.ylabel('Amplitude')
-
-plt.show()
-
-chirp_x = [ DFT(x, i) for i in range(len(x)) ]
-
-plt.plot(x)
-plt.show()
-plt.stem( A(np.asarray(chirp_x)), 'b', \
-         markerfmt=" ", basefmt="-b" )
-plt.show()
 
 # Fourier spectral entropy
-def entropy_spectral():
+def entropy_spectral(x):
     
+    a = np.abs(x)
+    p = a * 2 / np.sum(a * 2)
+    return -np.sum(p * np.log2(p)) / np.log2(len(X))
     
-    
-
-    
-    
-    return
 
 # Hankel-SVD
-
-
 def hankel_svd(X, nFrame, lFrame):
 
     N = nFrame
@@ -245,9 +213,13 @@ def create_features(X, Param):
     
     for i in range(Param[0]):
         for j in range(n_var):
-            X = data_class()
+            X = data_class(Dat,j,i)
             F = hankel_features(X, Param)
-            datF = apilar_features()
+            datF = apilar_features(F)
+            
+        Label = binary_label(i)
+        Y = apilar_features(Label)
+        X = apilar_features(datF)
     
     return
 
@@ -267,12 +239,6 @@ def load_data(Param):
         
         path_csv = path + '\class'+str(n+1)+'.csv'
         data_class = np.genfromtxt(path_csv, delimiter=',')
-        
-        ##añadir target aca o en otro lado
-        #feat = np.ones(data_class.shape[1]) * n # los datos son las columnas
-        #data_class = np.vstack((data_class,feat))
-        #print(data_class.shape)
-        
         data.append(data_class)
         
     return(data)
@@ -284,9 +250,9 @@ def load_data(Param):
 def main():
     Param = ut.load_cnf('cnf.csv')
     Data = load_data(Param)
-    #InputDat, OutDat = create_features(Data, Param)
-    #InputDat = data_norm(InputDat)
-    #save_data(InputDat, OutDat)
+    InputDat, OutDat = create_features(Data, Param)
+    InputDat = data_norm(InputDat)
+    save_data(InputDat, OutDat)
 
 
 if __name__ == '__main__':
