@@ -1,7 +1,8 @@
 # Nibaldeque1
 Tarea de Negocios 1
 -------------------
-Pablo Acu;a
+Benjamin Vial
+
 Benjamin Ramos
 Besos besos muack muack
 ## Links de explicaciones
