@@ -4,14 +4,20 @@ Tarea de Negocios 1
 Pablo Acu;a
 Benjamin Ramos
 Besos besos muack muack
+## Links de explicaciones
+[Funcionamiento de Mini-batch](https://towardsdatascience.com/stochastic-batch-and-mini-batch-gradient-descent-demystified-8b28978f7f5)
+
+[Calculo de la gradiente](https://medium.com/@pdquant/all-the-backpropagation-derivatives-d5275f727f60)
+
+[Calculo de la gradiente II](https://towardsdatascience.com/understanding-backpropagation-abcc509ca9d0#:~:text=%E2%80%9CEssentially%2C%20backpropagation%20evaluate)
 <br>
 ### Se aceptan donaciones por cuenta rut
-<br>
+
   nombre: Benjamin Ramos
-  <br>
+  
   rut: 20481689-1
-  <br>
+  
   mail: benja.pohga@gmail.com
-<br>
-<br>
+
+
 <img src="https://user-images.githubusercontent.com/81858128/232229021-a9fad984-5779-42be-8229-bf08d916af94.jpg"  width="300">
