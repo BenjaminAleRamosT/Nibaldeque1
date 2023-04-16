@@ -8,12 +8,14 @@ import math
 
 
 def save_data(X, Y, Param):
-    X = [x_i.flatten() for x_i in X ]
-
-    df = pd.DataFrame({
-                        'X': X,
-                        'Y': Y
-                            })
+    
+    df_x = pd.DataFrame.from_records(X)
+    df_x = df_x.add_prefix('x_')
+    
+    df_y = pd.DataFrame.from_records(Y)
+    df_y = df_y.add_prefix('y_')
+    
+    df = pd.concat([df_x, df_y], axis=1)
     
     p = Param[7]
     
@@ -223,13 +225,13 @@ def create_features(Dat, Param):
             print('\tClase: ',i+1,' dato: ',j+1)
             X_dat = data_class(Dat,j,i)
             F = hankel_features(X_dat, Param) # cada F es una muestra o cada datF
-            datF.append(F)
+            datF.extend(F)
             
         Label = binary_label(i,Param)
         for z in range( len(datF) ):
             Y.append(Label)
         X.extend(datF)
-    
+
     return X, Y
 
 

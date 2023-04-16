@@ -19,14 +19,14 @@ def load_cnf(ruta_archivo='cnf.csv'):
 
 
 # Initialize weights for SNN-SGDM
-def iniWs(Param):
-
-    inshape = 2  # PLACEHOLDER que parametro es, deberia ser el largo de las features
+def iniWs(inshape,Param):
+   
+    #inshape = 2  # PLACEHOLDER que parametro es, deberia ser el largo de las features
     in_shape, out_shape, layer1_node, layer2_node = inshape, Param[0], Param[4], Param[5]
 
-    W1 = iniW(layer1_node, in_shape)
-    W2 = iniW(layer1_node, layer2_node)
-    W3 = iniW(out_shape, layer2_node)
+    W1 = iniW(layer1_node,in_shape)
+    W2 = iniW(layer2_node,layer1_node)
+    W3 = iniW(out_shape,layer2_node)
     W = list((W1, W2, W3))
     
     V = []
@@ -49,32 +49,36 @@ def iniW(next, prev):
 
 
 def forward(x, W, Param):
-
+    
+    x = x.T
+    #print(x.shape)
     A = []
     z = []
     Act = []
+    
+    z.append(x)
+    A.append(x)
+    
     # primera capa
-
-    x = np.dot(x, W[0])
+    x = np.dot(W[0],x )
     z.append(x)
 
     x = act_function(x, act=Param[6])
     A.append(x)
     # segunda capa
 
-    x = np.dot(x, W[1])
+    x = np.dot(W[1],x )
     z.append(x)
 
     x = act_function(x, act=Param[6])
     A.append(x)
-
     # salida
-    x = np.dot(x * W[2])
+    x = np.dot(W[2],x  )
     z.append(x)
 
     y = act_function(x, act=4) #siempre sigmoid
     A.append(y)
-
+    
     Act.append(A)
     Act.append(z)
 
@@ -159,31 +163,41 @@ def gradW(Act, ye, W, Param):
     Act = lista de resultados de cada capa,
     data activada en [0] y no activada en [1]
     '''
-
+    
     L = len(Act[0])-1
     M = len(ye)
+    
+    ye = ye.T
+    
     gW = []
+
+    #print(L)
 
     # error salida
     # usar ultima capa en Act
-    t_e = (np.sum(np.square(Act[0][L] - ye), axis=1))/2
-    Cost = 1/M * (np.sum(t_e))
+    
+    Cost = (np.sum(np.square(Act[0][L] - ye), axis=0))/2
+    
+    #Cost = 1/M * (np.sum(t_e))
+
 
     # como se saca e?, deberia de esr una lista
+    
     delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
     gW_l = np.dot(delta, act_function(Act[0][L-1], act=4).T)
 
     gW.append(gW_l)
 
     # error capa oculta
-    for l in range(L-1, 0):
+    
+    for l in reversed(range(L-1)):
         t1 = np.dot(W[l+1].T, delta)
 
-        t2 = deriva_act(Act[1][l], act=Param[6])
+        t2 = deriva_act(Act[1][l+1], act=Param[6])
 
         delta = np.multiply(t1, t2)
 
-        t3 = act_function(Act[0][l-1], act=Param[6]).T
+        t3 = act_function(Act[0][l], act=Param[6]).T
 
         gW_l = np.dot(delta, t3)
         gW.append(gW_l)
@@ -200,8 +214,14 @@ def updWV_sgdm(W, V, gW, Param):
     tasa = Param[9]
     beta = Param[10]
 
+    #print('gw y v ',gW[0].shape, V[0].shape)
+    #print('gw y v ',gW[1].shape, V[1].shape)
+    #print('gw y v ',gW[2].shape, V[2].shape)
+
+
+
     for i in range(len(W)):
-        V[i] = (beta * V[i]) * (tasa*gW[i])
+        V[i] = (beta * V[i]) + (tasa*gW[i]) 
         W[i] = W[i] - V[i]
 
     return W, V
