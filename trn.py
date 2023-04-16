@@ -34,22 +34,26 @@ def trn_minibatch(X, Y, W, V, Param):
         ye = Y[slice(*Idx)]
         
         
-        Cost_minibatch = []
+        Cost_minibatch = 0
         gW_minibatch = []
-        for i in range(len(xe)):
+        m = len(xe)
+        for i in range(m):
             Act = ut.forward(xe.iloc[[i]] , W , Param)
             gW_n, Cost_n = ut.gradW(Act, ye.iloc[[i]], W, Param)
+            if i == 0:
+                gW_minibatch = gW_n
+            else:
+                gW_minibatch = [ np.add(gW_minibatch[i], gW_n[i]) for i in range( len( gW_n)) ]
             
-            gW_minibatch.append(gW_n)
-            Cost_minibatch.append(Cost_n)
-            
+            Cost_minibatch += float(Cost_n)
             
         #promediar las gradientes y costos
-        Cost.append(np.mean(Cost_minibatch))
-        #promediar las gradientes de cada muestra
-        for i in range(len(gW_minibatch)):
-            
+        #print(Cost_minibatch)
         
+        Cost = Cost_minibatch/m 
+        #print(Cost)
+        #promediar las gradientes de cada muestra
+        gW = [gW/m for gW in gW_minibatch]
         
         W , V = ut.updWV_sgdm(W, V, gW, Param)
     

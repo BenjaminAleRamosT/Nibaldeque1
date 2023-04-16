@@ -177,7 +177,7 @@ def gradW(Act, ye, W, Param):
     # usar ultima capa en Act
     
     Cost = (np.sum(np.square(Act[0][L] - ye), axis=0))/2
-    
+    #print(Cost)
     #Cost = 1/M * (np.sum(t_e))
 
 
