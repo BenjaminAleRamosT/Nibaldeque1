@@ -4,7 +4,12 @@ Tarea de Negocios 1
 Benjamin Vial
 
 Benjamin Ramos
-Besos besos muack muack
+
+## Obs
+La entropia no se como ni porque funciona
+
+### Andres no tiene permitido hacer uso de este codigo
+
 ## Links de explicaciones
 [Funcionamiento de Mini-batch](https://towardsdatascience.com/stochastic-batch-and-mini-batch-gradient-descent-demystified-8b28978f7f5)
 
@@ -12,7 +17,7 @@ Besos besos muack muack
 
 [Calculo de la gradiente II](https://towardsdatascience.com/understanding-backpropagation-abcc509ca9d0#:~:text=%E2%80%9CEssentially%2C%20backpropagation%20evaluate)
 <br>
-### Se aceptan donaciones por cuenta rut
+## Se aceptan donaciones por cuenta rut
 
   nombre: Benjamin Ramos
   
