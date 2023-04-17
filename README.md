@@ -20,7 +20,10 @@ Faltan comentarios
 [Calculo de la gradiente II](https://towardsdatascience.com/understanding-backpropagation-abcc509ca9d0#:~:text=%E2%80%9CEssentially%2C%20backpropagation%20evaluate)
 
 [Metricas](https://www.v7labs.com/blog/confusion-matrix-guide)
-<br>
+
+## Costo por iteracion
+<img src=03b00cd1-e71b-4670-b68c-c2998e4a18e4.jpg   width="300">
+
 ## Se aceptan donaciones por cuenta rut
 
   nombre: Benjamin Ramos
