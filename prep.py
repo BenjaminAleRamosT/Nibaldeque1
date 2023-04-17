@@ -62,9 +62,7 @@ def DFT(x, k):
     return suma
 
 #uso de la DFT
-#x = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-#x = [complex(x_i) for x_i in x]
-#i_x = [ DFT(x, i) for i in range(len(x)) ]
+
 
 #Inverse Fourier Transform
 def IDFT(x, n):
@@ -84,15 +82,28 @@ def amplitud_espectral(x):
     B = x.imag
     return np.sqrt( np.sum([np.square(A) , np.square(B)] ,axis = 0) )
 
+import matplotlib.pyplot as plt
 
 # Fourier spectral entropy
 def entropy_spectral(x):
+    x = data_norm(np.abs(x)) 
     
-    a = np.abs(x)
-    p = a * 2 / np.sum(a * 2)
-    return -np.sum(p * np.log2(p)) / np.log2(len(a))
+    N = len(x)
     
-
+    I = math.ceil(math.sqrt(N))
+    
+    Xmax ,Xmin = np.max(x), np.min(x)
+    l = (Xmax - Xmin)/(I-1)
+    
+    p = []
+    for i in range(I):
+        p_i = len([a for a in x if i*l <= a <= (i*l)+l])/N 
+        if p_i != 0:
+            p.append(p_i)
+       
+    p = np.asarray(p)
+    return -np.sum( p * np.log2(p)) /np.log2(I)
+ 
 # Hankel-SVD
 def hankel_svd(X, nFrame, lFrame):
 
@@ -197,9 +208,9 @@ def hankel_features(X,Param):
             for item in C:
                 #x = [complex(x_i) for x_i in item]
                 #x = [ DFT(complex(x), i) for i in range(len(item)) ]
-                x = [amplitud_espectral(i_x) for i_x in item]
+                x = [amplitud_espectral(i_x ) for i_x in item]
             
-                e.append(entropy_spectral(x))
+                e.append(entropy_spectral(x[:len(x)//2]))
             np.asarray(e)
             
         F.append( np.hstack(( e , S )) )

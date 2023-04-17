@@ -241,9 +241,9 @@ def metricas(y, z):
         Precision = TP / (TP + FP)
         Recall    = TP / (TP + FN)
         Fsc.append(( 2 * Precision * Recall ) / ( Precision + Recall ))
-        
+     
     Fsc.append( sum(Fsc)/len(Fsc) )
-    
+
     return cm, Fsc
 
 # Confusion matrix
