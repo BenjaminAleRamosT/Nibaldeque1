@@ -1,7 +1,7 @@
 # Nibaldeque1
 Tarea de Negocios 1
 -------------------
-Benjamin Vial
+Pabloco
 
 Benjamin Ramos
 
