@@ -6,7 +6,7 @@ Benjamin Vial
 Benjamin Ramos
 
 ## Obs
-La entropia no se como ni porque funciona, revisar si sobra tiempo
+La entropia funciona, se probo con con una muestra random como dijo el profe y retorna cercano a 1
 
 Faltan comentarios
 
