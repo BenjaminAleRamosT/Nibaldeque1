@@ -6,7 +6,9 @@ Benjamin Vial
 Benjamin Ramos
 
 ## Obs
-La entropia no se como ni porque funciona
+La entropia no se como ni porque funciona, revisar si sobra tiempo
+
+Faltan comentarios
 
 ### Andres no tiene permitido hacer uso de este codigo
 
