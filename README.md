@@ -6,7 +6,6 @@ Pabloco
 Benjamin Ramos
 
 ## Obs
-Hay que cambiar la entropia
 
 Faltan comentarios
 
