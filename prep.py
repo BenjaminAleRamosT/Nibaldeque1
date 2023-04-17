@@ -82,8 +82,6 @@ def amplitud_espectral(x):
     B = x.imag
     return np.sqrt( np.sum([np.square(A) , np.square(B)] ,axis = 0) )
 
-import matplotlib.pyplot as plt
-
 # Fourier spectral entropy
 def entropy_spectral(x):
     x = data_norm(np.abs(x)) 
@@ -134,11 +132,6 @@ def hankel_svd(X, nFrame, lFrame):
     U, Svalues_C, V = np.linalg.svd(C)
     
     return Svalues_C
-
-##Para probar
-#X = [3.5186, 3.2710, 1.0429, 2.3774, 0.0901, 1.7010, 1.2509, 0.6459]
-#nFrame, lFrame = 8,3
-#hankel_svd(X, nFrame, lFrame)
 
 # Hankel's Diadica
 
@@ -217,9 +210,6 @@ def hankel_features(X,Param):
                 
     return F
     
-#X = [1,2,3,4,5,6,7,8]
-#hankel_features(X, (3,3,3,3) )
-
 
 # Obtain j-th variables of the i-th class
 def data_class(Dat, j, i):
