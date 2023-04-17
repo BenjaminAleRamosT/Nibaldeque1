@@ -9,7 +9,7 @@ def save_w_mse(W,Cost):
     np.savez('w_snn.npz', W[0],W[1],W[2])
     
     df = pd.DataFrame( Cost )
-    df.to_csv('costo.csv',index=False )
+    df.to_csv('costo.csv',index=False, header = False )
     
     return
 
@@ -33,30 +33,10 @@ def trn_minibatch(X, Y, W, V, Param):
         xe = X[slice(*Idx)]
         ye = Y[slice(*Idx)]
         
-        
-        Cost_minibatch = 0
-        gW_minibatch = []
-        m = len(xe)
-        for i in range(m):
-            Act = ut.forward(xe.iloc[[i]] , W , Param)
-            gW_n, Cost_n = ut.gradW(Act, ye.iloc[[i]], W, Param)
-            if i == 0:
-                gW_minibatch = gW_n
-            else:
-                gW_minibatch = [ np.add(gW_minibatch[i], gW_n[i]) for i in range( len( gW_n)) ]
-            
-            Cost_minibatch += float(Cost_n)
-            
-        #promediar las gradientes y costos
-        #print(Cost_minibatch)
-        
-        Cost = Cost_minibatch/m 
-        #print(Cost)
-        #promediar las gradientes de cada muestra
-        gW = [gW/m for gW in gW_minibatch]
+        Act = ut.forward(xe, W , Param)
+        gW, Cost = ut.gradW(Act, ye, W, Param)
         
         W , V = ut.updWV_sgdm(W, V, gW, Param)
-    
     
     return Cost, W, V
 
@@ -64,11 +44,7 @@ import random
 
 #sort data random
 def sort_data_ramdom(X,Y):
-    
-    #zipped = list(zip(X, Y))
-    #random.shuffle(zipped)
-    #X, Y = zip(*zipped)
-    #X, Y = list(X), list(Y)
+
     idx = np.random.permutation(X.index)
     
     return X.reindex(idx), Y.reindex(idx)
@@ -82,7 +58,6 @@ def train(X,Y,Param):
     for Iter in range(Param[11]):
         X,Y = sort_data_ramdom(X,Y)
         Cost, W, V = trn_minibatch(X ,Y ,W ,V , Param)
-        
         MSE.append(np.mean(Cost))
         if Iter%10 == 0:
             print('Iterar-SGD: ', Iter,' ', MSE[Iter])
