@@ -6,7 +6,7 @@ Pabloco
 Benjamin Ramos
 
 ## Obs
-La entropia funciona, se probo con con una muestra random como dijo el profe y retorna cercano a 1
+Hay que cambiar la entropia
 
 Faltan comentarios
 
