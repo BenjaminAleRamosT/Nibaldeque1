@@ -12,6 +12,7 @@ def save_data(X, Y, Param):
     df_x = pd.DataFrame.from_records(X)
     df_x = df_x.add_prefix('x_')
     
+    
     df_y = pd.DataFrame.from_records(Y)
     df_y = df_y.add_prefix('y_')
     
@@ -52,16 +53,20 @@ def binary_label(i,Param):
     return label
 
 #Discrete Fourier Transform
-def DFT(x, k):
+def DFT(x):
     #se cambio el output para no dividirlo por N
     suma = 0
     N = len(x)
-    x = [complex(x_i) for x_i in x]
-    for n in range(N):
-        suma += x[n] * np.exp( - (1j * ((2*math.pi)/N)*k*n ) )
-    return suma
+    #x = [complex(x_i) for x_i in x]
+    n = np.arange(N)
+    k = n.reshape((N, 1))
+    
+    exp = np.exp( - (1j * ((2*math.pi)/N)*k*n ) )
+    
+    X = np.dot(exp, x)
+    
+    return X
 
-#uso de la DFT
 
 
 #Inverse Fourier Transform
@@ -91,7 +96,7 @@ def entropy_spectral(x):
     I = math.ceil(math.sqrt(N))
     
     Xmax ,Xmin = np.max(x), np.min(x)
-    l = (Xmax - Xmin)/(I-1)
+    l = (Xmax - Xmin)/(I-1) 
     
     p = []
     for i in range(I):
@@ -165,7 +170,7 @@ def hankel_diadica(X):
 #gets Index for n-th Frame
 def get_Idx_n_Frame(n,l):
     
-    Idx = (n*l,(n*l)+l)
+    Idx = (n*l , (n*l) +l)
     
     return(Idx) #tuple de indices
 
@@ -199,13 +204,13 @@ def hankel_features(X,Param):
             e = []
             U, S, V = np.linalg.svd(np.asarray(C))
             for item in C:
-                #x = [complex(x_i) for x_i in item]
-                #x = [ DFT(complex(x), i) for i in range(len(item)) ]
-                x = [amplitud_espectral(i_x ) for i_x in item]
-            
+                x = DFT(item)
+                
                 e.append(entropy_spectral(x[:len(x)//2]))
             np.asarray(e)
             
+        
+        
         F.append( np.hstack(( e , S )) )
                 
     return F
@@ -218,6 +223,7 @@ def data_class(Dat, j, i):
 
 # Create Features from Data
 def create_features(Dat, Param):
+    # Dat : lista de dataframes de 4 columnas
     #print(len(Dat))
     Y, X = [],[]
     for i in range(Param[0]):
@@ -227,6 +233,7 @@ def create_features(Dat, Param):
             X_dat = data_class(Dat,j,i)
             F = hankel_features(X_dat, Param) # cada F es una muestra o cada datF
             datF.extend(F)
+            
             
         Label = binary_label(i,Param)
         for z in range( len(datF) ):

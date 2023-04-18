@@ -79,6 +79,8 @@ def forward(X, W, Param):
         A.append(y)
 
         Act.append(A)
+        
+
         Act.append(z)
 
         Act_M.append(Act)
@@ -175,13 +177,13 @@ def gradW(Act_M, Ye, W, Param):
 
         Cost += float((np.sum(np.square(Act[0][L] - ye), axis=0))/2)
 
-        # error salida
+        # grad salida
         delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
         gW_l = np.dot(delta, act_function(Act[0][L-1], act=4).T)
 
         gW.append(gW_l)
 
-        # error capas ocultas
+        # grad capas ocultas
 
         for l in reversed(range(L-1)):
             t1 = np.dot(W[l+1].T, delta)
