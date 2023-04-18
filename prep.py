@@ -100,7 +100,7 @@ def entropy_spectral(x):
     
     p = []
     for i in range(I):
-        p_i = len([a for a in x if i*l <= a <= (i*l)+l])/N 
+        p_i = len([a for a in x if (i*l)+Xmin <= a < (i*l)+l+Xmin])/N 
         if p_i != 0:
             p.append(p_i)
        
