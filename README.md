@@ -11,6 +11,7 @@ Faltan comentarios
 
 ### Andres no tiene permitido hacer uso de este codigo
 
+
 ## Links de explicaciones
 [Funcionamiento de Mini-batch](https://towardsdatascience.com/stochastic-batch-and-mini-batch-gradient-descent-demystified-8b28978f7f5)
 
@@ -30,6 +31,11 @@ Faltan comentarios
   rut: 20481689-1
   
   mail: benja.pohga@gmail.com
+
+
+
+[![]](https://user-images.githubusercontent.com/81858128/232707414-85defbf1-8fb8-425e-84fb-765aa082cc54.mov)
+
 
 
 <img src="https://user-images.githubusercontent.com/81858128/232229021-a9fad984-5779-42be-8229-bf08d916af94.jpg"  width="300">
