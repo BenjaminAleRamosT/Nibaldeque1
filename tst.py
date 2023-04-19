@@ -34,6 +34,7 @@ def main():
     xv,yv  = load_data_test()
     W      = load_w()
     zv     = ut.forward(xv,W,param)
+    #print(zv)
     cm,Fsc = ut.metricas(yv,zv) 	
     save_measure(cm,Fsc)
 		

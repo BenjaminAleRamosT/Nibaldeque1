@@ -30,6 +30,7 @@ def trn_minibatch(X, Y, W, V, Param):
     
     for n in range(nBatch):
         Idx = get_Idx_n_Batch(n,M)
+        
         xe = X[slice(*Idx)]
         ye = Y[slice(*Idx)]
         

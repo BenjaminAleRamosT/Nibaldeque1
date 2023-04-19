@@ -45,47 +45,32 @@ def iniW(next, prev):
 
 
 def forward(X, W, Param):
-    Act_M = []  # data de cada muestra
+      # data de cada muestra
 
-    for index, x in X.iterrows():
+    #X = np.asarray(X.T).reshape(-1, 1)
+    
+    X = np.asarray(X.T)
+    A = []
+    z = []
+    Act = []
 
-        x = np.asarray(x.T).reshape(-1, 1)
-        A = []
-        z = []
-        Act = []
-
-        # data input
-        z.append(x)
-        A.append(x)
-        # primera capa
-        x = np.dot(W[0], x)
-        z.append(x)
-
-        x = act_function(x, act=Param[6])
-        A.append(x)
-        # segunda capa
-
-        x = np.dot(W[1], x)
-        z.append(x)
-
-        x = act_function(x, act=Param[6])
-        A.append(x)
-
-        # salida
-        x = np.dot(W[2], x)
-        z.append(x)
-
-        y = act_function(x, act=4)  # siempre sigmoid
-        A.append(y)
-
-        Act.append(A)
+    # data input
+    z.append(X)
+    A.append(X)
+    # primera capa
+    for i in range(len(W)):
+        X = np.dot(W[i], X)
+        z.append(X)
+        if i == 2:
+            X = act_function(X, act=4)
+        else:
+            X = act_function(X, act=Param[6])
         
+        A.append(X)
+    Act.append(A)
+    Act.append(z)
 
-        Act.append(z)
-
-        Act_M.append(Act)
-
-    return Act_M
+    return Act
 
 
 # Activation function
@@ -155,58 +140,48 @@ def deriva_act(x, act=0, a_ELU=1, a_SELU=1.6732, lambd=1.0507):
 
     if act == 4:
         # pasarle la sigmoid
-        return act_function(x, act=4) * (1 - act_function(x, act=4))
+        return np.multiply(act_function(x, act=4) , (1 - act_function(x, act=4)))
 
     return x
 
 # Feed-Backward of SNN
 
 
-def gradW(Act_M, Ye, W, Param):
+def gradW(Act, ye, W, Param):
     '''
     Act = lista de resultados de cada capa,
     data activada en [0] y no activada en [1]
     '''
+    L = len(Act[0])-1
+    gW = []
 
-    Cost = 0
-    gW_M = []
-    for i, Act in enumerate(Act_M):
-        L = len(Act[0])-1
-        ye = Ye.iloc[[i]].T
-        gW = []
+    M = ye.shape[0]
+    ye = np.asarray(ye).T
+    
+    Cost = np.sum(np.sum(np.square(Act[0][L] - ye), axis=0)/2)/M
+    
+    # grad salida
+    delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
+    gW_l = np.dot(delta, Act[0][L-1].T)/M
 
-        Cost += float((np.sum(np.square(Act[0][L] - ye), axis=0))/2)
+    gW.append(gW_l)
 
-        # grad salida
-        delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
-        gW_l = np.dot(delta, act_function(Act[0][L-1], act=4).T)
+    # grad capas ocultas
 
+    for l in reversed(range(1,L)):
+        
+        t1 = np.dot(W[l].T, delta)
+
+        t2 = deriva_act(Act[1][l], act=Param[6])
+
+        delta = np.multiply(t1, t2)
+
+        t3 = Act[0][l-1].T
+
+        gW_l = np.dot(delta, t3)/M
         gW.append(gW_l)
 
-        # grad capas ocultas
-
-        for l in reversed(range(L-1)):
-            t1 = np.dot(W[l+1].T, delta)
-
-            t2 = deriva_act(Act[1][l+1], act=Param[6])
-
-            delta = np.multiply(t1, t2)
-
-            t3 = act_function(Act[0][l], act=Param[6]).T
-
-            gW_l = np.dot(delta, t3)
-            gW.append(gW_l)
-
-        gW.reverse()
-
-        if i == 0:
-            gW_M = gW
-        else:
-            gW_M = [np.add(gW_M[i], gW[i]) for i in range(len(gW))]
-
-    m = len(Act_M)
-    Cost = Cost/m
-    gW = [gW/m for gW in gW_M]
+    gW.reverse()
     return gW, Cost
 
 # Update W and V
@@ -228,8 +203,9 @@ def updWV_sgdm(W, V, gW, Param):
 
 def metricas(y, z):
 
-    z = [z[i][0][-1] for i in range(len(z))]
-    z = np.asarray(z).squeeze()
+    z = z[0][-1].T
+    
+    #z = np.asarray(z).squeeze()
     y = np.asarray(y)
     cm, cm_m = confusion_matrix(z, y)
     
@@ -252,13 +228,16 @@ def metricas(y, z):
 
 def confusion_matrix(z, y):
     
-    m= len(y[0])
+    m= y.shape[0]
+    c = y.shape[1]
     
-    y = np.argmax(y, axis=1)
-    z = np.argmax(z, axis=1)
+    y = np.reshape(np.argmax(y, axis=1),(-1,1) )
     
-    cm = np.zeros((m,m))
-    for i in range(len(y)):
+    z = np.reshape(np.argmax(z, axis=1),(-1,1) )
+    
+    cm = np.zeros((c,c))
+    
+    for i in range(m):
          cm[z[i] ,y[i]] +=1
     
     cm_m = np.zeros((cm.shape[0], 2, 2)) #matriz confusion por clase
@@ -271,3 +250,9 @@ def confusion_matrix(z, y):
     
     return cm , cm_m
 # -----------------------------------------------------------------------
+
+
+
+
+
+
