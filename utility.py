@@ -61,7 +61,7 @@ def forward(X, W, Param):
         X = np.dot(W[i], X)
         z.append(X)
         if i == 2:
-            X = act_function(X, act=4)
+            X = act_function(X, act=5)
         else:
             X = act_function(X, act=Param[6])
         
@@ -139,7 +139,7 @@ def deriva_act(x, act=1, a_ELU=1, a_SELU=1.6732, lambd=1.0507):
 
     if act == 5:
         # pasarle la sigmoid
-        return np.multiply(act_function(x, act=4) , (1 - act_function(x, act=4)))
+        return np.multiply(act_function(x, act=5) , (1 - act_function(x, act=5)))
 
     return x
 
@@ -158,7 +158,7 @@ def gradW(Act, ye, W, Param):
     Cost = np.sum(np.sum(np.square(Act[0][L] - ye), axis=0)/2)/M
     
     # grad salida
-    delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
+    delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=5))
 
     gW_l = np.dot(delta, Act[0][L-1].T)
 
