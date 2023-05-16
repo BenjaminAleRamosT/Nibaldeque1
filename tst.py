@@ -19,13 +19,13 @@ def load_w():
 
 
 # Load data to test the SNN
-def load_data_test(ruta_archivo='dtrain.csv'):
+def load_data_test(ruta_archivo='dtest.csv'):
 
     df = pd.read_csv(ruta_archivo, converters={'COLUMN_NAME': pd.eval})
     X = df.filter(regex='x_')
     Y = df.filter(regex='y_')
-        
-    return X, Y
+    
+    return np.asarray(X.T), np.asarray(Y.T)
    
 
 # Beginning ...

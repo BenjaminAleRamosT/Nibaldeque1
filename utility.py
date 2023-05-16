@@ -49,7 +49,6 @@ def forward(X, W, Param):
 
     #X = np.asarray(X.T).reshape(-1, 1)
     
-    X = np.asarray(X.T)
     A = []
     z = []
     Act = []
@@ -155,14 +154,13 @@ def gradW(Act, ye, W, Param):
     L = len(Act[0])-1
     gW = []
 
-    M = ye.shape[0]
-    ye = np.asarray(ye).T
-    
+    M = ye.shape[1]
     Cost = np.sum(np.sum(np.square(Act[0][L] - ye), axis=0)/2)/M
     
     # grad salida
     delta = np.multiply(Act[0][L] - ye, deriva_act(Act[1][L], act=4))
-    gW_l = np.dot(delta, Act[0][L-1].T)/M
+
+    gW_l = np.dot(delta, Act[0][L-1].T)
 
     gW.append(gW_l)
 
@@ -178,7 +176,7 @@ def gradW(Act, ye, W, Param):
 
         t3 = Act[0][l-1].T
 
-        gW_l = np.dot(delta, t3)/M
+        gW_l = np.dot(delta, t3)
         gW.append(gW_l)
 
     gW.reverse()
@@ -203,10 +201,10 @@ def updWV_sgdm(W, V, gW, Param):
 
 def metricas(y, z):
 
-    z = z[0][-1].T
+    z = z[0][-1]
     
     #z = np.asarray(z).squeeze()
-    y = np.asarray(y)
+    
     cm, cm_m = confusion_matrix(z, y)
     
     Fsc = []
@@ -227,13 +225,14 @@ def metricas(y, z):
 # Confusion matrix
 
 def confusion_matrix(z, y):
-    
+    y,z = y.T,z.T
     m= y.shape[0]
     c = y.shape[1]
     
-    y = np.reshape(np.argmax(y, axis=1),(-1,1) )
+    y = np.argmax(y, axis=1)
     
-    z = np.reshape(np.argmax(z, axis=1),(-1,1) )
+    z = np.argmax(z, axis=1)
+   
     
     cm = np.zeros((c,c))
     

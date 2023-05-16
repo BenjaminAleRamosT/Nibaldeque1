@@ -46,7 +46,6 @@ def binary_label(i,Param):
 
     #cantidad de clases distintas
     n_class = Param[0]
-   
     label = np.zeros( n_class )
     label[i] = 1
     
@@ -204,13 +203,13 @@ def hankel_features(X,Param):
             e = []
             U, S, V = np.linalg.svd(np.asarray(C))
             for item in C:
-                x = DFT(item)
-                
-                e.append(entropy_spectral(x[:len(x)//2]))
+                #x = DFT(item)
+                x = np.fft.fft(item)
+                # e.append(entropy_spectral(x[:len(x)//2]))
+                e.append(entropy_spectral(x))
+
             np.asarray(e)
             
-        
-        
         F.append( np.hstack(( e , S )) )
                 
     return F
