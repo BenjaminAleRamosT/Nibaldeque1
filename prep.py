@@ -204,9 +204,9 @@ def hankel_features(X,Param):
             U, S, V = np.linalg.svd(np.asarray(C))
             for item in C:
                 #x = DFT(item)
-                x = abs(np.fft.fft(item))
-                # e.append(entropy_spectral(x[:len(x)//2]))
-                e.append(entropy_spectral(x))
+                x = np.fft.fft(item)
+                e.append(entropy_spectral(x[:len(x)//2]))
+                # e.append(entropy_spectral(x))
 
             np.asarray(e)
             
