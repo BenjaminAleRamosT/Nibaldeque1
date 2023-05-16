@@ -77,31 +77,31 @@ def act_function(x, act=0, a_ELU=1, a_SELU=1.6732, lambdd=1.0507):
 
     # Relu
 
-    if act == 0:
+    if act == 1:
         condition = x > 0
         return np.where(condition, x, np.zeros(x.shape))
 
     # LRelu
 
-    if act == 1:
+    if act == 2:
         condition = x >= 0
         return np.where(condition, x, x * 0.01)
 
     # ELU
 
-    if act == 2:
+    if act == 3:
         condition = x > 0
         return np.where(condition, x, a_ELU * np.expm1(x))
 
     # SELU
 
-    if act == 3:
+    if act == 4:
         condition = x > 0
         return lambdd * np.where(condition, x, a_SELU * np.expm1(x))
 
     # Sigmoid
 
-    if act == 4:
+    if act == 5:
         return 1 / (1 + np.exp(-1*x))
 
     return x
@@ -109,35 +109,35 @@ def act_function(x, act=0, a_ELU=1, a_SELU=1.6732, lambdd=1.0507):
 # Derivatives of the activation funciton
 
 
-def deriva_act(x, act=0, a_ELU=1, a_SELU=1.6732, lambd=1.0507):
+def deriva_act(x, act=1, a_ELU=1, a_SELU=1.6732, lambd=1.0507):
 
     # Relu
 
-    if act == 0:
+    if act == 1:
         condition = x > 0
         return np.where(condition, np.ones(x.shape), np.zeros(x.shape))
 
     # LRelu
 
-    if act == 1:
+    if act == 2:
         condition = x > 0
         return np.where(condition, np.ones(x.shape), np.ones(x.shape) * 0.01)
 
     # ELU
 
-    if act == 2:
+    if act == 3:
         condition = x > 0
         return np.where(condition, np.ones(x.shape), a_ELU * np.exp(x))
 
     # SELU falta
 
-    if act == 3:
+    if act == 4:
         condition = x > 0
         return lambd * np.where(condition, np.ones(x.shape), a_SELU * np.exp(x))
 
     # Sigmoid
 
-    if act == 4:
+    if act == 5:
         # pasarle la sigmoid
         return np.multiply(act_function(x, act=4) , (1 - act_function(x, act=4)))
 
