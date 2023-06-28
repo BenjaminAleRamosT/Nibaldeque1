@@ -5,6 +5,9 @@ Pabloco
 
 Benjamin Ramos
 
+NOTA: 50
+Prep como la callampa, dependiendo de la corrida los fscores varian, los costos tienen ruido
+
 ## Obs
 
 Faltan comentarios
